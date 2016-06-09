@@ -1,5 +1,9 @@
 package taxirides;
 
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Tiko Huizinga - s4460898
@@ -19,6 +23,7 @@ public class Simulation {
     public static final int NROFSMALLTAXIS = 2;
 
     private Taxi[] taxis;
+    private Thread[] threads;
     private Train train;
     private Station station;
 
@@ -28,17 +33,25 @@ public class Simulation {
     public Simulation() {
         station = new Station();
         taxis = new Taxi[NROFTAXIS];
+        threads = new Thread[NROFTAXIS];
+        train = new Train(station);
         for (int i = 0; i < NROFTAXIS; i++) {
             taxis[i] = i < NROFSMALLTAXIS ? new Taxi(i + 1, CAPACITYSMALL, TIMESMALL, station) : new Taxi(i + 1,
                     CAPACITYLARGE, TIMELARGE, station);
+            threads[i] = new Thread(taxis[i]);
         }
-        train = new Train(station);
+        startTaxis();
+    }
+
+    private void startTaxis() {
+        for (int i = 0; i < NROFTAXIS; i++) {
+            threads[i].start();
+        }
     }
 
     public void step() {
         if (station.getNrOfPassengersWaiting() > 0) {
-            taxis[nextTaxi].takePassengers();
-            nextTaxi = (nextTaxi + 1) % NROFTAXIS;
+            System.out.print("");
         } else if (train.getNrOfTrips() < TRAIN_TRIPS) {
             train.getIn(Util.getRandomNumber(MIN_TRAVELLERS, MAX_TRAVELLERS));
             train.getOff();

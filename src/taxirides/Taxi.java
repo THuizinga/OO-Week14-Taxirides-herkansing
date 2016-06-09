@@ -6,10 +6,9 @@ package taxirides;
  * @author Conny Blach - s4329872
  *
  */
-
 import java.util.concurrent.TimeUnit;
 
-public class Taxi {
+public class Taxi implements Runnable {
 
     private static final long SLEEPTIME = 100;
     private final int taxiId;
@@ -33,16 +32,15 @@ public class Taxi {
      */
     public void takePassengers() {
         int passengersWaiting = station.getNrOfPassengersWaiting();
-        if (passengersWaiting > 0) {
-            int nrOfPassengers = Math.min(passengersWaiting, maxNrOfPassengers);
-            station.leaveStation(nrOfPassengers);
+        int nrOfPassengers = Math.min(passengersWaiting, maxNrOfPassengers);
+        if (station.leaveStation(nrOfPassengers)) {
             totalNrOfPassengers += nrOfPassengers;
             nrOfRides++;
             System.out.println("Taxi " + taxiId + " takes " + nrOfPassengers + " passengers");
         } else {
             System.out.println("Taxi " + taxiId + " takes no passengers");
             try {
-                TimeUnit.MILLISECONDS.sleep(SLEEPTIME); // if no passengers at the station wait some time
+                TimeUnit.MILLISECONDS.sleep(SLEEPTIME); // if no passengers at the station, wait some time
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -61,6 +59,32 @@ public class Taxi {
 
     public int getTotalNrOfPassengers() {
         return totalNrOfPassengers;
+    }
+
+    private void waitABit() {
+        System.out.println("Taxi " + taxiId + " takes no passengers");
+        try {
+            TimeUnit.MILLISECONDS.sleep(SLEEPTIME); // if no passengers at the station, wait some time
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void run() {
+        int nrOfPassengers;
+        while (!station.isClosed() || station.getNrOfPassengersWaiting() > 0) {
+            if (station.getNrOfPassengersWaiting() == 0) {
+                waitABit();
+            }
+            while (!station.leaveStation(nrOfPassengers = Math.min(station.getNrOfPassengersWaiting(), maxNrOfPassengers))) {
+                totalNrOfPassengers += nrOfPassengers;
+                nrOfRides++;
+                System.out.println("Taxi " + taxiId + " takes " + nrOfPassengers + " passengers");
+            }
+
+        }
     }
 
 }

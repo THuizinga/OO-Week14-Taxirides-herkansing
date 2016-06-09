@@ -20,7 +20,7 @@ public class Station {
         this.isClosed = false;
     }
 
-    public void enterStation(int nrOfPassengers) {
+    public synchronized void enterStation(int nrOfPassengers) {
         nrOfPassengersAtStation += nrOfPassengers;
         totalNrOfPassengers += nrOfPassengers;
         System.out.println("Train with " + nrOfPassengers + " passengers has arrived");
@@ -31,8 +31,11 @@ public class Station {
      *
      * @param nrOfPassengers
      */
-    public void leaveStation(int nrOfPassengers) {
-        nrOfPassengersAtStation -= nrOfPassengers;
+    public synchronized int leaveStation(int nrOfPassengers) {
+        int verlaatStation = 0;
+        verlaatStation = Math.min(nrOfPassengers, nrOfPassengersAtStation);
+        nrOfPassengersAtStation-=verlaatStation;
+        return verlaatStation;
     }
 
     public int getNrOfPassengersWaiting() {

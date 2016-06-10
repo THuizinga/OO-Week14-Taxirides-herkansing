@@ -43,15 +43,23 @@ public class Simulation {
         startTaxis();
     }
 
+    /**
+     * Start the taxithreads. 
+     */
     private void startTaxis() {
         for (int i = 0; i < NROFTAXIS; i++) {
             threads[i].start();
         }
     }
 
+    /**
+     * The step function will keep the trains coming as long as less trains 
+     * have arrived then the number of planned trips. When all trains have arrived
+     * and there are no more passengers left, the station will be closed. 
+     */
     public void step() {
         if (station.getNrOfPassengersWaiting() > 0) {
-            System.out.print("");
+            System.out.print("");           //If nothing here, the compiler will skip this step while it is important for the simulation..
         } else if (train.getNrOfTrips() < TRAIN_TRIPS) {
             train.getIn(Util.getRandomNumber(MIN_TRAVELLERS, MAX_TRAVELLERS));
             train.getOff();

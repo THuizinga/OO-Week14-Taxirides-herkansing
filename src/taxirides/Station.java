@@ -20,6 +20,11 @@ public class Station {
         this.isClosed = false;
     }
 
+    /**
+     * This will add passengers to the station. This is synchronized because
+     * nrOfPassengersAtStation is also used by different threads.
+     * @param nrOfPassengers 
+     */
     public synchronized void enterStation(int nrOfPassengers) {
         nrOfPassengersAtStation += nrOfPassengers;
         totalNrOfPassengers += nrOfPassengers;
@@ -27,9 +32,11 @@ public class Station {
     }
 
     /**
-     * Ask for nrOfPassengers Passengers to leave the station
-     *
-     * @param nrOfPassengers
+     * Ask an ammount of people to leave the station.
+     * If there are less people at the station then asked, let only those people
+     * who are there leave.
+     * @param nrOfPassengers The ammout of people asked to leave the station
+     * @return The ammount of people actually leaving the station.
      */
     public synchronized int leaveStation(int nrOfPassengers) {
         int verlaatStation = 0;
@@ -38,6 +45,7 @@ public class Station {
         return verlaatStation;
     }
 
+    
     public int getNrOfPassengersWaiting() {
         return nrOfPassengersAtStation;
     }

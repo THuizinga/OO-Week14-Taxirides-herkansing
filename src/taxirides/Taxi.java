@@ -45,6 +45,9 @@ public class Taxi implements Runnable {
         return totalNrOfPassengers;
     }
 
+    /**
+     * This lets the taxi wait a bit and print that it takes no passengers this time.
+     */
     private void waitABit() {
         System.out.println("Taxi " + taxiId + " takes no passengers");
         try {
@@ -55,6 +58,14 @@ public class Taxi implements Runnable {
 
     }
 
+    /**
+     * Makes the taxi active and drive around moving passengers.
+     * The taxi stays active as long as the station is open.
+     * If there are currently no passengers, let the taxi wait a bit, another
+     * train will come soon. If there are passengers at the station, 
+     * the taxi will keep bringing them to their destination until the station
+     * is empty. Every time the taxi moved passengers, it will print that.
+     */
     @Override
     public void run() {
         int nrOfPassengers;
